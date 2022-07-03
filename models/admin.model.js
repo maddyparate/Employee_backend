@@ -1,15 +1,27 @@
-module.exports = mongoose => {
-    var AdminSchema = mongoose.Schema({
-        email:{
-            type:String,
-            required:true
-        },
-        password:{
-            type:String,
-            required:true
-        }
-    })
+const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 
-    const AdminModel = mongoose.model("admin",AdminSchema)
-    return AdminModel
-}
+const AdminSchema = new mongoose.Schema({
+    name:{
+        type:String,
+        required:true
+    },
+    email:{
+        type:String,
+        required:true
+    },
+    password:{
+        type:String,
+        required:true
+    }
+})
+
+
+// Encrypt the password
+AdminSchema.pre('save', function (next){
+    const saltRounds = 10
+    this.password = bcrypt.hashSync(this.password, saltRounds)
+    next()
+})
+
+module.exports = mongoose.model("admin",AdminSchema)
